@@ -6,7 +6,7 @@ export class PostsModel {
   id: number;
 
   @Column()
-  author: number;
+  author: string;
 
   @Column()
   title: string;
