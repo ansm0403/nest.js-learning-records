@@ -5,6 +5,12 @@ import { HASH_ROUNDS, JWT_SECRET } from './const/auth.const';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 
+interface JwtPayload {
+  sub: string;
+  email: string;
+  type: 'access' | 'refresh';
+}
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -74,14 +80,14 @@ export class AuthService {
   /**
    * 토큰 검증
    */
-  verifyToken(token: string): any {
+  verifyToken(token: string): Promise<JwtPayload> {
     return this.jwtService.verify(token, {
       secret: JWT_SECRET,
     });
   }
 
   rotateToken(token: string, isRefereshToken: boolean) {
-    const decoded = this.jwtService.verify(token, {
+    const decoded: JwtPayload = this.jwtService.verify(token, {
       secret: JWT_SECRET,
     });
 
@@ -98,7 +104,8 @@ export class AuthService {
 
     return this.signToken(
       {
-        ...decoded,
+        id: +decoded.sub,
+        email: decoded.email,
       },
       isRefereshToken,
     );
