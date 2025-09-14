@@ -5,10 +5,15 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
-  Put,
+  UseGuards,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
+import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
+import { User } from 'src/users/decorator/user.decorator';
+import { CreatePostDTO } from './dto/create-post.dto';
+import { UpdatePostDTO } from './dto/update-post.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -25,21 +30,22 @@ export class PostsController {
   }
 
   @Post()
-  createPost(
-    @Body('authorId') authorId: number,
-    @Body('title') title: string,
-    @Body('content') content: string,
+  @UseGuards(AccessTokenGuard)
+  postPost(
+    @User('id') userId: number,
+    @Body() body: CreatePostDTO,
+    // @Body('title') title: string,
+    // @Body('content') content: string,
   ) {
-    return this.postsService.createPost(authorId, title, content);
+    return this.postsService.createPost(userId, body);
   }
 
-  @Put(':id')
-  updatePost(
+  @Patch(':id')
+  patchPost(
     @Param('id', ParseIntPipe) id: number,
-    @Body('title') title?: string,
-    @Body('content') content?: string,
+    @Body() body: UpdatePostDTO,
   ) {
-    return this.postsService.updatePost(id, title, content);
+    return this.postsService.updatePost(id, body);
   }
 
   @Delete(':id')

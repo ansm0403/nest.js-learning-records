@@ -4,6 +4,7 @@ import { UserModel } from 'src/users/entities/users.entity';
 import { HASH_ROUNDS, JWT_SECRET } from './const/auth.const';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
+import { RegisterUserDTO } from './dto/register-user.dto';
 
 interface JwtPayload {
   sub: string;
@@ -81,9 +82,13 @@ export class AuthService {
    * 토큰 검증
    */
   verifyToken(token: string): Promise<JwtPayload> {
-    return this.jwtService.verify(token, {
-      secret: JWT_SECRET,
-    });
+    try {
+      return this.jwtService.verify(token, {
+        secret: JWT_SECRET,
+      });
+    } catch (e) {
+      throw new UnauthorizedException('토큰이 만료됐거나 잘못된 토큰입니다.');
+    }
   }
 
   rotateToken(token: string, isRefereshToken: boolean) {
@@ -198,9 +203,7 @@ export class AuthService {
    * 생성이 완료되면 accessToken 과 refreshToken 을 반환
    * 회원가입 후 다시 로그인하는 쓸데없는 과정 없앰.
    */
-  async registerWithEmail(
-    user: Pick<UserModel, 'nickname' | 'email' | 'password'>,
-  ) {
+  async registerWithEmail(user: RegisterUserDTO) {
     const hash = await bcrypt.hash(user.password, HASH_ROUNDS);
 
     const newUser = await this.usersService.createUser({
