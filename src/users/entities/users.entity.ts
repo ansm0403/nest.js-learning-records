@@ -3,6 +3,7 @@ import { Role } from '../const/roles.const';
 import { PostsModel } from 'src/posts/entities/posts.entity';
 import { BaseModel } from 'src/common/entity/base.entity';
 import { IsEmail, IsString, Length } from 'class-validator';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class UserModel extends BaseModel {
@@ -28,6 +29,22 @@ export class UserModel extends BaseModel {
   @Length(5, 15, {
     message: '비밀번호는 5 ~ 15 자로 입력해주세요.',
   })
+  @Exclude({
+    toPlainOnly: true,
+  })
+  /**
+   * Request
+   * frontend -> backend 로 보낼 때는 아래와 같다.
+   * plain object (JSON) -> class instance (dto)
+   *
+   * Response
+   * 만약 backend -> frontend 로 보낸다면 반대 이다.
+   *
+   * 이제 Exclude 의 두 옵션을 보자.
+   * toClassOnly : class instance 로 변환될때에만 (Request)
+   * toPlainOnly : plain object 로 변환될때에만 (Response)
+   * 회원가입은 요청 시에는 비밀번호를 서버에 전달해야하니 막으면 안되지만 유저 데이터를 그냥 보여줄 때에는 서버에서 비밀번호 주면 안된다.
+   */
   password: string;
 
   @Column({
