@@ -4,9 +4,13 @@ import { PostsModel } from './entities/posts.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePostDTO } from './dto/create-post.dto';
 import { UpdatePostDTO } from './dto/update-post.dto';
-import { HOST, PROTOCOL } from 'src/common/const/env.const';
 import { CommonService } from 'src/common/common.service';
 import { BasePaginationDto } from 'src/common/dto/base-pagination.dto';
+import {
+  ENV_HOST_KEY,
+  ENV_PROTOCOL_KEY,
+} from 'src/common/const/env-keys.const';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PostsService {
@@ -14,6 +18,7 @@ export class PostsService {
     @InjectRepository(PostsModel)
     private readonly postsRepository: Repository<PostsModel>,
     private readonly commonService: CommonService,
+    private readonly configService: ConfigService,
   ) {}
 
   async getAllPosts() {
@@ -31,7 +36,7 @@ export class PostsService {
     return this.commonService.paginate(
       query,
       this.postsRepository,
-      {},
+      { relations: ['author'] },
       'posts',
     );
   }
@@ -60,7 +65,10 @@ export class PostsService {
         ? posts[posts.length - 1]
         : null;
 
-    const nextUrl = lastItem && new URL(`${PROTOCOL}://${HOST}/posts`);
+    const protocol = this.configService.get<string>(ENV_PROTOCOL_KEY);
+    const host = this.configService.get<string>(ENV_HOST_KEY);
+
+    const nextUrl = lastItem && new URL(`${protocol}://${host}/posts`);
 
     if (nextUrl) {
       /**
@@ -141,12 +149,13 @@ export class PostsService {
     return post;
   }
 
-  async createPost(authorId: number, postDto: CreatePostDTO) {
+  async createPost(authorId: number, postDto: CreatePostDTO, image?: string) {
     const post = this.postsRepository.create({
       ...postDto,
       author: {
         id: authorId,
       },
+      image,
       likeCount: 0,
       commentCount: 0,
     });

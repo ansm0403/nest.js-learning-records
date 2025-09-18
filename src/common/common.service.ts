@@ -8,10 +8,12 @@ import {
 } from 'typeorm';
 import { BaseModel } from './entity/base.entity';
 import { FILTER_MAPPER } from './const/filter-mapper.const';
-import { HOST, PROTOCOL } from './const/env.const';
+import { ConfigService } from '@nestjs/config';
+import { ENV_HOST_KEY, ENV_PROTOCOL_KEY } from './const/env-keys.const';
 
 @Injectable()
 export class CommonService {
+  constructor(private readonly configService: ConfigService) {}
   /**
    * 페이지네이션 일반화
    */
@@ -72,7 +74,10 @@ export class CommonService {
         ? results[results.length - 1]
         : null;
 
-    const nextUrl = lastItem && new URL(`${PROTOCOL}://${HOST}/posts`);
+    const protocol = this.configService.get<string>(ENV_PROTOCOL_KEY);
+    const host = this.configService.get<string>(ENV_HOST_KEY);
+
+    const nextUrl = lastItem && new URL(`${protocol}://${host}/${path}`);
 
     if (nextUrl) {
       /**
@@ -84,8 +89,11 @@ export class CommonService {
        */
       for (const key of Object.keys(query)) {
         if (query[key]) {
-          if (key !== 'where__id__more_than' && 'where__id__less_than') {
-            nextUrl.searchParams.append(key, String(query[key]));
+          if (
+            key !== 'where__id__more_than' &&
+            key !== 'where__id__less_than'
+          ) {
+            nextUrl.searchParams.append(key, query[key]);
           }
         }
       }
@@ -99,6 +107,8 @@ export class CommonService {
       }
       nextUrl.searchParams.append(key, lastItem.id.toString());
     }
+
+    console.log('result: ', results);
 
     return {
       data: results,
@@ -156,6 +166,7 @@ export class CommonService {
       // key -> where__id__less_than 라면
       // value -> 1
 
+      if (value === undefined || value === null) continue;
       if (key.startsWith('where__')) {
         where = {
           ...where,
@@ -168,6 +179,13 @@ export class CommonService {
         };
       }
     }
+
+    console.log('query : ', {
+      where,
+      order,
+      take: query.take,
+      skip: query.page ? query.take * (query.page - 1) : undefined,
+    });
 
     return {
       where,
@@ -231,10 +249,12 @@ export class CommonService {
       // 그래서 3,4 처럼 콤마를 기준으로 split 해서 값을 가져올 것이다.
       const values = String(value).split(',');
 
-      if (operator === 'between') {
-        options[field] = FILTER_MAPPER[operator](values[0], values[1]);
+      if (operator === 'i_like') {
+        options[field] = FILTER_MAPPER[operator](`%${value}%`);
+        console.log('where : ', split, value, FILTER_MAPPER[operator]);
       } else {
         options[field] = FILTER_MAPPER[operator](value);
+        console.log('where : ', split, value, FILTER_MAPPER[operator]);
       }
     }
 
