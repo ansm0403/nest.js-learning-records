@@ -6,6 +6,7 @@ import {
   ExceptionFilter,
   ValidationPipe,
 } from '@nestjs/common';
+import { Response } from 'express';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -13,7 +14,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     console.error('에러 발생: ', exception);
 
     const ctx = host.switchToHttp();
-    const response = ctx.getResponse();
+    const response = ctx.getResponse<Response>();
 
     response.status(500).json({
       MessageChannel: exception.message || '서버 에러',
