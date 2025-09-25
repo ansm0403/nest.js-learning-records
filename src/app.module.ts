@@ -3,9 +3,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostsModule } from './posts/posts.module';
-import { PostsModel } from './posts/entities/posts.entity';
+import { PostsModel } from './posts/entity/posts.entity';
 import { UsersModule } from './users/users.module';
-import { UserModel } from './users/entities/users.entity';
+import { UserModel } from './users/entity/users.entity';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
@@ -20,6 +20,8 @@ import {
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { PUBLIC_FOLDER_PATH } from './common/const/path.const';
 import { ImageModel } from './common/entity/image.entity';
+import { CommentsModule } from './posts/comments/comments.module';
+import { CommentModel } from './posts/comments/entity/comment.entity';
 
 @Module({
   imports: [
@@ -35,7 +37,7 @@ import { ImageModel } from './common/entity/image.entity';
       username: process.env[ENV_DB_USERNAME_KEY],
       password: process.env[ENV_DB_PASSWORD_KEY],
       database: process.env[ENV_DB_DATABASE_KEY],
-      entities: [PostsModel, UserModel, ImageModel],
+      entities: [PostsModel, UserModel, ImageModel, CommentModel],
       synchronize: true,
     }),
     ServeStaticModule.forRoot({
@@ -52,6 +54,7 @@ import { ImageModel } from './common/entity/image.entity';
     UsersModule,
     AuthModule,
     CommonModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [

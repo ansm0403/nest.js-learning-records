@@ -6,7 +6,7 @@ import {
   QueryRunner,
   Repository,
 } from 'typeorm';
-import { PostsModel } from './entities/posts.entity';
+import { PostsModel } from './entity/posts.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePostDTO } from './dto/create-post.dto';
 import { UpdatePostDTO } from './dto/update-post.dto';
@@ -227,5 +227,13 @@ export class PostsService {
     await this.postsRepository.delete(postId);
 
     return postId;
+  }
+
+  async checkPostExistById(id: number) {
+    return this.postsRepository.exists({
+      where: {
+        id,
+      },
+    });
   }
 }

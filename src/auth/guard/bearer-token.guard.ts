@@ -7,7 +7,7 @@ import {
 import { AuthService } from '../auth.service';
 import { Request } from 'express';
 import { UsersService } from 'src/users/users.service';
-import { UserModel } from 'src/users/entities/users.entity';
+import { UserModel } from 'src/users/entity/users.entity';
 
 type TokenType = 'access' | 'refresh';
 

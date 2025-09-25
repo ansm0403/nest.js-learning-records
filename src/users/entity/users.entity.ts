@@ -1,9 +1,10 @@
 import { Column, Entity, OneToMany } from 'typeorm';
 import { Role } from '../const/roles.const';
-import { PostsModel } from 'src/posts/entities/posts.entity';
+import { PostsModel } from 'src/posts/entity/posts.entity';
 import { BaseModel } from 'src/common/entity/base.entity';
 import { IsEmail, IsString, Length } from 'class-validator';
 import { Exclude } from 'class-transformer';
+import { CommentModel } from 'src/posts/comments/entity/comment.entity';
 
 @Entity()
 export class UserModel extends BaseModel {
@@ -56,4 +57,7 @@ export class UserModel extends BaseModel {
 
   @OneToMany(() => PostsModel, (post) => post.author)
   posts: PostsModel[];
+
+  @OneToMany(() => CommentModel, (comment) => comment.author)
+  postComments: CommentModel[];
 }
