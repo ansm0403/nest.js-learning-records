@@ -1,11 +1,14 @@
 import { Body, Controller, Get } from '@nestjs/common';
 import { UsersService } from './users.service';
+import { Roles } from './decorator/roles.decorator';
+import { Role } from './const/roles.const';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
+  @Roles(Role.ADMIN)
   /**
    * serialization 은? 직렬화
    * 직렬화는? 현재 시스템( Nestjs )에서 사용되는 데이터의 구조를 다른 시스템에서도 쉽게 사용할 수 있는 퐷으로 변환.

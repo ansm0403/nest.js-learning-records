@@ -25,6 +25,10 @@ import { LogInterceptor } from 'src/common/interceptor/log.interceptor';
 import { TransactionInterceptor } from 'src/common/interceptor/transaction.interceptor';
 import { QueryRunner } from 'src/common/decorator/query-runner.decorator';
 import type { QueryRunner as QR } from 'typeorm';
+import { Roles } from 'src/users/decorator/roles.decorator';
+import { Role } from 'src/users/const/roles.const';
+import { IsPublic } from 'src/common/decorator/is-public.decorator';
+import { IsPostMineOrAdmin } from './guard/is-post-mine-or-admin.guard';
 
 @Controller('posts')
 export class PostsController {
@@ -42,18 +46,19 @@ export class PostsController {
   }
 
   @Get()
+  @IsPublic()
   @UseInterceptors(LogInterceptor)
   getPosts(@Query() query: PaginatePostDto) {
     return this.postsService.paginatePosts(query);
   }
 
   @Get(':id')
+  @IsPublic()
   getPostById(@Param('id', ParseIntPipe) id: number) {
     return this.postsService.getPostById(id);
   }
 
   @Post()
-  @UseGuards(AccessTokenGuard)
   @UseInterceptors(TransactionInterceptor)
   async postPost(
     @User('id') userId: number,
@@ -79,15 +84,18 @@ export class PostsController {
     }
   }
 
-  @Patch(':id')
+  @Patch(':postId')
+  @UseGuards(IsPostMineOrAdmin)
   patchPost(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('postId', ParseIntPipe) id: number,
     @Body() body: UpdatePostDTO,
   ) {
     return this.postsService.updatePost(id, body);
   }
 
   @Delete(':id')
+  @UseGuards(IsPostMineOrAdmin)
+  @Roles(Role.ADMIN)
   deletePost(@Param('id', ParseIntPipe) id: number) {
     return this.postsService.deletePost(id);
   }

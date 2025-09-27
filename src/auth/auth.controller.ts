@@ -3,12 +3,14 @@ import { AuthService } from './auth.service';
 import { BasicTokenGuard } from './guard/basic-token.guard';
 import { RefreshTokenGuard } from './guard/bearer-token.guard';
 import { RegisterUserDTO } from './dto/register-user.dto';
+import { IsPublic } from 'src/common/decorator/is-public.decorator';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('token/access')
+  @IsPublic()
   @UseGuards(RefreshTokenGuard)
   postTokenAccess(@Headers('authorization') rawToken: string) {
     const token = this.authService.extractTokenFromHeader(rawToken, true);
@@ -21,6 +23,7 @@ export class AuthController {
   }
 
   @Post('token/refresh')
+  @IsPublic()
   @UseGuards(RefreshTokenGuard)
   postTokenRefresh(@Headers('authorization') rawToken: string) {
     const token = this.authService.extractTokenFromHeader(rawToken, true);
@@ -37,6 +40,7 @@ export class AuthController {
    * 해당 동작을 가드를 통해서 막아야 한다.
    */
   @Post('login/email')
+  @IsPublic()
   @UseGuards(BasicTokenGuard)
   postLoginEmail(@Headers('authorization') rawToken: string) {
     // email:password 를 base64 인코딩
@@ -50,6 +54,7 @@ export class AuthController {
   }
 
   @Post('register/email')
+  @IsPublic()
   postRegisterEmail(@Body() body: RegisterUserDTO) {
     return this.authService.registerWithEmail(body);
   }
