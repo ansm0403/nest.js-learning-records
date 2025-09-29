@@ -24,6 +24,7 @@ import { CommentsModule } from './posts/comments/comments.module';
 import { CommentModel } from './posts/comments/entity/comment.entity';
 import { RolesGuard } from './users/guard/roles.guard';
 import { AccessTokenGuard } from './auth/guard/bearer-token.guard';
+import { UserFollowersModel } from './users/entity/user-followers.entity';
 
 @Module({
   imports: [
@@ -39,7 +40,13 @@ import { AccessTokenGuard } from './auth/guard/bearer-token.guard';
       username: process.env[ENV_DB_USERNAME_KEY],
       password: process.env[ENV_DB_PASSWORD_KEY],
       database: process.env[ENV_DB_DATABASE_KEY],
-      entities: [PostsModel, UserModel, ImageModel, CommentModel],
+      entities: [
+        PostsModel,
+        UserModel,
+        ImageModel,
+        CommentModel,
+        UserFollowersModel,
+      ],
       synchronize: true,
     }),
     ServeStaticModule.forRoot({
