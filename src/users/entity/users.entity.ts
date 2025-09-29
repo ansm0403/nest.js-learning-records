@@ -5,6 +5,7 @@ import { BaseModel } from 'src/common/entity/base.entity';
 import { IsEmail, IsString, Length } from 'class-validator';
 import { Exclude } from 'class-transformer';
 import { CommentModel } from 'src/posts/comments/entity/comment.entity';
+import { UserFollowersModel } from './user-followers.entity';
 
 @Entity()
 export class UserModel extends BaseModel {
@@ -60,4 +61,16 @@ export class UserModel extends BaseModel {
 
   @OneToMany(() => CommentModel, (comment) => comment.author)
   postComments: CommentModel[];
+
+  @OneToMany(() => UserFollowersModel, (ufm) => ufm.follower)
+  followers: UserFollowersModel[];
+
+  @OneToMany(() => UserFollowersModel, (ufm) => ufm.followee)
+  followees: UserFollowersModel[];
+
+  @Column()
+  followerCount: number;
+
+  @Column()
+  followeeCount: number;
 }
