@@ -6,3 +6,4 @@ nest.js SNS REST API
 * 로그인 및 회원가입 API
 * 페이지 기반 페이지네이션, 무한 스크롤 페이지네이션 API
 * 파일 업로드 API
+* 메시지 전송 API
