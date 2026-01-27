@@ -8,3 +8,4 @@ nest.js SNS REST API
 * 파일 업로드 API
 * 메시지 전송 API
 * 상호 간 통신 API
+* 토큰과 쿠키를 이용한 로그인 보안
