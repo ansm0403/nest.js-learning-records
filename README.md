@@ -1,4 +1,4 @@
-nest.js SNS REST API
+nest.js REST API
 
 * 유저 관리 API
 * 포스트 작성 API
