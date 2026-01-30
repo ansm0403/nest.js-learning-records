@@ -1,5 +1,6 @@
 nest.js REST API
 
+* nest.js 동작 과정 및 각 과정의 역할과 구현
 * 유저 관리 API
 * 포스트 작성 API
 * 좋아요 및 코멘트 API
