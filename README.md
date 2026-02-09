@@ -1,7 +1,7 @@
 nest.js 
 
 * docker postgres + typeorm 결합
-* nest.js 동작 과정 및 각 과정의 역할과 구현
+* nest.js 동작 과정 및 각 과정(미들웨어, 가드, 인터셉터, 파이프)의 역할과 구현
 * 유저 관리 API
 * 포스트 작성 API
 * 좋아요 및 코멘트 API
